@@ -6,6 +6,7 @@
 #include <ctype.h>
 #include <fstream>
 #include <chrono>
+#include <iomanip> 
 
 using namespace std;
 const string chucai = "QWERTYUIOPASDFGHJKLZXCVBNM1234567890";
@@ -16,6 +17,7 @@ struct Baixe
     time_t timeout = 0;
     double tienxe = 0;
 };
+
 Baixe baixe1[4][5];
 Baixe baixe2[4][5];
 Baixe baixe3[4][5];
@@ -23,16 +25,12 @@ Baixe baixe3[4][5];
 /*-------------------------------HAM SU DUNG------------------------------------*/
 int Random(int min, int max);
 string taoBiensoxe();
-void inputCustomtime();
-string customTime_char(int& hour, int& min, int& sec, int& day, int& month, int& year);
-unsigned long long customTime_num(int& hour, int& min, int& sec, int& day, int& month, int& year);
 bool isEmpty(Baixe baixe[4][5]);
 void park_lot();
 void nhapXe(Baixe baixe[4][5]);
 void luuFile();
 void khoiphuc();
-void cleanFile();
-void luu_Baocao();
+void luu_Baocao(Baixe bx[4][5], int& m, int& n);
 void doc_Baocao();
 void output_arr();
 bool isHople(string car);
@@ -145,6 +143,7 @@ void nhapXe(Baixe baixe[4][5])
 
 void output_arr()
 {
+    cout << "Bai xe 1" << endl;
     for (int i = 0; i < 4; i++)
     {
         for (int j = 0; j < 5; j++)
@@ -153,60 +152,37 @@ void output_arr()
         }
         cout << endl;
     }
+    cout << endl << "Bai xe 2" << endl;
+    for (int i = 0; i < 4; i++)
+    {
+        for (int j = 0; j < 5; j++)
+        {
+            cout << baixe2[i][j].biensoxe << " ";
+        }
+        cout << endl;
+    }
+    cout << endl << "Bai xe 3" << endl;
+    for (int i = 0; i < 4; i++)
+    {
+        for (int j = 0; j < 5; j++)
+        {
+            cout << baixe3[i][j].biensoxe << " ";
+        }
+        cout << endl;
+    }
 }
 
 // TINH TIEN XE
-int sum = 50000, dem = -1;
-int tien_xe(int secs)
-{
-    if (secs > 0)
-    {
+double tien_xe(time_t secs)
+{   
+    double sum = 50000, dem = -1;
+    while (secs > 0)
+    { 
+        secs -= 1800;
         dem++;
-        return tien_xe(secs - 1800);
     }
     sum += dem * 30000;
     return sum;
-}
-
-/*--------------------------------LAY THOI GIAN NHAP VAO-------------------------------------*/
-void inputCustomtime()
-{
-    int hour, min, sec, day, month, year;
-    cout << "Nhap thoi gian xuat xe (gio, phut, giay, ngay, thang, nam): ";
-    cin >> hour >> min >> sec >> day >> month >> year;
-    customTime_char(hour, min, sec, day, month, year);
-    customTime_num(hour, min, sec, day, month, year);
-}
-
-string customTime_char(int& hour, int& min, int& sec, int& day, int& month, int& year)
-{
-    struct tm* customtime = new tm;
-    customtime->tm_hour = hour;
-    customtime->tm_min = min;
-    customtime->tm_sec = sec;
-    customtime->tm_mday = day;
-    customtime->tm_mon = month - 1;
-    customtime->tm_year = year - 1900;
-
-    time_t custom = mktime(customtime);
-    delete customtime;
-    char* custom_char = ctime(&custom);
-    return custom_char;
-}
-
-unsigned long long customTime_num(int& hour, int& min, int& sec, int& day, int& month, int& year)
-{
-    struct tm* customtime = new tm;
-    customtime->tm_hour = hour;
-    customtime->tm_min = min;
-    customtime->tm_sec = sec;
-    customtime->tm_mday = day;
-    customtime->tm_mon = month - 1;
-    customtime->tm_year = year - 1900;
-
-    time_t custom = mktime(customtime);
-    delete customtime;
-    return custom;
 }
 /*---------------------------------------------------------------------------------------------*/
 
@@ -253,6 +229,8 @@ void deleteCar(Baixe baixe[4][5], int& m, int& n)
 {
     baixe[m][n].biensoxe = "";
     baixe[m][n].timein = 0;
+    baixe[m][n].timeout = 0;
+    baixe[m][n].tienxe = 0;
 }
 
 
@@ -279,12 +257,12 @@ time_t customTime()
 {
     // Nhập thông tin về thời gian từ người dùng
     int year, month, day, hour, minute, second;
-    std::cout << "nhap nam : ";
-    std::cin >> year;
-    std::cout << "nhap thang:  ";
-    std::cin >> month;
     std::cout << "nhap ngay : ";
     std::cin >> day;
+    std::cout << "nhap thang:  ";
+    std::cin >> month;
+    std::cout << "nhap nam : ";
+    std::cin >> year;
     std::cout << "nhap gio  ";
     std::cin >> hour;
     std::cout << "nhap phut : ";
@@ -293,33 +271,29 @@ time_t customTime()
     std::cin >> second;
 
     // Gọi hàm chuyển đổi thời gian và in ra kết quả
-    std::time_t result = convertToTimeT(year, month, day, hour, minute, second);
-    std::cout << "thoi gian o dang  time_t: " << result << std::endl;
-
-    return 0;
+    time_t result = convertToTimeT(year, month, day, hour, minute, second);
+    return result;
 }
 
-void time_xuatxe( Baixe bx ,tm tg )
+void time_xuatxe(Baixe bx[4][5], int& m, int& n)
 {
-    int n;
+    int x;
     cout << "chon thoi gian hien tai hay thoi gian nhap vao(1/0)  "<< endl ;
-    cin >> n;
-    if (n == 1)
+    cin >> x;
+    if (x == 1)
     {
-        bx.timeout = time(0);
-        cout << time(0);
-
+        bx[m][n].timeout = time(0);
     }
     else
     {
-        customTime;
-        bx.timeout = customTime();
-       
-
+        bx[m][n].timeout = customTime();
     }
-    int lech;
-    lech = bx.timeout - bx.timein;
-    cout << tien_xe(lech);
+    time_t lech;
+    lech = bx[m][n].timeout - bx[m][n].timein;
+    cout << lech << endl;
+    bx[m][n].tienxe = tien_xe(lech);
+    cout << "Xe ra bai luc: " << ctime(&bx[m][n].timeout) << endl;
+    cout << "So tien phai tra: " << bx[m][n].tienxe << "VND" << endl;
 }
 void xuatXe()
 {
@@ -373,19 +347,18 @@ retry:
             switch (x)
             {
             case 1:
-                
-                time_xuatxe();
-                luu_Baocao;
+                time_xuatxe(baixe1, m, n);
+                luu_Baocao(baixe1, m, n);
                 deleteCar(baixe1, m, n);
                 break;
             case 2:
-                time_xuatxe;
-                luu_Baocao;
+                time_xuatxe(baixe2, m, n);
+                luu_Baocao(baixe2, m, n);
                 deleteCar(baixe2, m, n);
                 break;
             case 3:
-                time_xuatxe;
-                luu_Baocao;
+                time_xuatxe(baixe3, m, n);
+                luu_Baocao(baixe3, m, n);
                 deleteCar(baixe3, m, n);
                 break;
             }
@@ -400,6 +373,7 @@ retry:
 /* OPTION 4 */
 void timXe()
 {
+    int x = 0;
     bool isFound = false;
     string car;
 retry:
@@ -415,24 +389,19 @@ retry:
         {
             if (baixe1[i][j].biensoxe == car)
             {
-                cout << "Xe dang o bai xe so 1, vi tri " << (char)(i + 65) << j + 1 << endl;
-                isFound = true;
-                break;
+                x = 1;
             }
-
             if (baixe2[i][j].biensoxe == car)
             {
-                cout << "Xe dang o bai xe so 2, vi tri " << (char)(i + 65) << j + 1 << endl;
-                isFound = true;
-                break;
+                x = 2;
             }
-
             if (baixe3[i][j].biensoxe == car)
             {
-                cout << "Xe dang o bai xe so 3, vi tri " << (char)(i + 65) << j + 1 << endl;
-                isFound = true;
-                break;
+                x = 3;
             }
+            cout << "Tim thay xe o bai xe so " << x << ", vi tri " << (char)(i + 65) << j + 1 << endl;
+            isFound = true;
+            break;
         }
         if (isFound)
         {
@@ -510,11 +479,15 @@ void khoiphuc()
     recover3.close();
 }
 
-void luu_Baocao()
+void luu_Baocao(Baixe bx[4][5], int &m, int &n)
 {
-    ofstream out;
-    out.open("baocaohangngay.txt");
-
+    ofstream save;
+    save.open("baocaohangngay.txt", ios::app);
+    save << bx[m][n].biensoxe << endl;
+    save << ctime(&bx[m][n].timein);
+    save << ctime(&bx[m][n].timeout);
+    save << bx[m][n].tienxe;
+    save.close();
 }
 
 void doc_Baocao()
@@ -535,28 +508,16 @@ void doc_Baocao()
         getline(in, biensoxe);
         getline(in, time_in);
         getline(in, time_out);
-        getline(in, fee);
-        cout << biensoxe << "     " << time_in << "     " << time_out << "     " << fee << "VND" << endl;
+        in >> fee;
+        in.ignore();
+        cout << biensoxe << "              " << time_in << "              " << time_out << "              " << fee << "VND" << endl;
         count += 4;
-        if (count == total_line - 3)
+        if (count >= total_line - 3)
         {
             break;
         }
     }
     in.close();
-}
-
-void cleanFile()
-{
-    fstream clean, clean1, clean2, clean3;
-    clean.open("baocaohangngay.txt", ios::out);
-    clean.close();
-    clean1.open("khoiphucbaixe1.txt", ios::out);
-    clean1.close();
-    clean2.open("khoiphucbaixe2.txt", ios::out);
-    clean2.close();
-    clean3.open("khoiphucbaixe3.txt", ios::out);
-    clean3.close();
 }
 /*---------------------------------------------------*/
 
@@ -606,24 +567,23 @@ void select()
     cout << endl;
     switch (choice)
     {
-    case 1:
+    case 1: //Nhap xe vao bai
         park_lot();
         break;
     case 2: //Xuat xe ra bai
+        output_arr();
         xuatXe();
         break;
-     /*case 3:
-        docFile();
-        break;*/
-    case 4:
+    case 3:// in ra bao cao
+        cout << "Bien so xe             Thoi gian vao                         Thoi gian ra                          Tien gui xe" << endl;
+        doc_Baocao();
+        break;
+    case 4:// tim xe trong bai
         timXe();
         break;
     case 5: // In mang de kiem tra
         output_arr();
         break;
-        //case 6: // Xoa du lieu tat ca file
-        //    cleanFile();
-        //    break;
     default:
         cout << "Khong co option nay!" << endl;
     }
