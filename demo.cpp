@@ -554,7 +554,23 @@ void doc_Baocao()
 int main()
 {
     khoiphuc();
-    while (true)
+    Nhapoption: 
+    system("cls");
+    menu();
+    select();
+    int n;
+    cout << endl << "Ban co muon tiep tuc khong? (1/0): ";
+    cin >> n;
+    if (n == 1)
+    {
+        goto Nhapoption;
+    }
+    else
+    {
+        luuFile();
+        cout << "Ket thuc!" << endl;
+    }
+    /*while (true)
     {
         int n;
         cout << endl << "Ban co muon tiep tuc khong? (1/0): ";
@@ -571,7 +587,7 @@ int main()
             cout << "Ket thuc!" << endl;
             break;
         }
-    }
+    }*/
 
     return 0;
 
